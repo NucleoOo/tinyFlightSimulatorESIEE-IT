@@ -158,6 +158,8 @@ namespace MFlight
 
         private void RotateRig()
         {
+            /*
+            // First Version
             if (mouseAim == null || cam == null || cameraRig == null)
                 return;
 
@@ -188,11 +190,21 @@ namespace MFlight
             Vector3 upVec = (Mathf.Abs(mouseAim.forward.y) > 0.9f) ? cameraRig.up : Vector3.up;
 
             // Smoothly rotate the camera to face the mouse aim.
-            /*
             cameraRig.rotation = Damp(cameraRig.rotation,
                                       Quaternion.LookRotation(mouseAim.forward, upVec),
                                       camSmoothSpeed,
                                       Time.deltaTime);
+            */
+            /*
+            // Second Version
+            float mouseX = Input.GetAxis("Mouse X") * 2f;
+            float mouseY = Input.GetAxis("Mouse Y") * 2f;
+
+            // L'avion pique du nez si je descend la souris, qu'il lève le nez avec la souris vers le haut.
+            aircraft.Rotate(-mouseY, 0, 0);
+
+            // L'avion effectue un roulis à gauche si la souris se déplace à gauche et un roulis à droite si la souris se déplace vers la droite.
+            aircraft.Rotate(0, 0, -mouseX);
             */
         }
 
