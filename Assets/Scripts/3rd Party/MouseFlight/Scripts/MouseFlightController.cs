@@ -188,10 +188,12 @@ namespace MFlight
             Vector3 upVec = (Mathf.Abs(mouseAim.forward.y) > 0.9f) ? cameraRig.up : Vector3.up;
 
             // Smoothly rotate the camera to face the mouse aim.
+            /*
             cameraRig.rotation = Damp(cameraRig.rotation,
                                       Quaternion.LookRotation(mouseAim.forward, upVec),
                                       camSmoothSpeed,
                                       Time.deltaTime);
+            */
         }
 
         private Vector3 GetFrozenMouseAimPos()
@@ -206,14 +208,10 @@ namespace MFlight
         {
             if (firstCamPos != null && isFirstPersonView)
             {
-                Debug.Log("1st person");
-                Debug.Log("OffsetTmpValue:" + offsetTemp);
                 transform.position = firstCamPos.position;
             }
             else if (aircraft != null)
             {
-                Debug.Log("3rd person");
-                Debug.Log("OffsetTmpValue:" + offsetTemp);
                 transform.position = aircraft.position;
             }
         }
