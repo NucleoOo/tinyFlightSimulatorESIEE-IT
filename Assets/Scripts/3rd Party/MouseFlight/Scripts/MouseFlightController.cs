@@ -111,11 +111,15 @@ namespace MFlight
             // rotations causing unintended rotations as it gets dragged around.
             transform.parent = null;
 
+            /*
             if (!Application.isEditor)
             {
                 Cursor.lockState = CursorLockMode.Confined;
                 Cursor.visible = false;
             }
+            */
+            Cursor.lockState = CursorLockMode.Locked;
+            Cursor.visible = false;
         }
 
         private void Update()
@@ -173,26 +177,11 @@ namespace MFlight
                 mouseAim.forward = frozenDirection;
             }
 
-            // Mouse input.
-            float mouseX = Input.GetAxis("Mouse X") * mouseSensitivity;
-            float mouseY = -Input.GetAxis("Mouse Y") * mouseSensitivity;
-
-            // Rotate the aim target that the plane is meant to fly towards.
-            // Use the camera's axes in world space so that mouse motion is intuitive.
-            mouseAim.Rotate(cam.right, mouseY, Space.World);
-            mouseAim.Rotate(cam.up, mouseX, Space.World);
-
-            // The up vector of the camera normally is aligned to the horizon. However, when
-            // looking straight up/down this can feel a bit weird. At those extremes, the camera
-            // stops aligning to the horizon and instead aligns to itself.
-            Vector3 upVec = (Mathf.Abs(mouseAim.forward.y) > 0.9f) ? cameraRig.up : Vector3.up;
-
-            // Smoothly rotate the camera to face the mouse aim.
-            cameraRig.rotation = Damp(cameraRig.rotation,
-                                      Quaternion.LookRotation(mouseAim.forward, upVec),
-                                      camSmoothSpeed,
-                                      Time.deltaTime);
+            // Smoothly rotate the camera to face the forward direction of the aircraft.
+            Quaternion targetRotation = Quaternion.LookRotation(aircraft.forward, aircraft.up);
+            cameraRig.rotation = Damp(cameraRig.rotation, targetRotation, camSmoothSpeed, Time.deltaTime);
         }
+
 
         private Vector3 GetFrozenMouseAimPos()
         {
