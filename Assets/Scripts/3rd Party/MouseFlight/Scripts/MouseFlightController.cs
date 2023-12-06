@@ -158,7 +158,7 @@ namespace MFlight
 
         private void RotateRig()
         {
-            /*
+            
             // First Version
             if (mouseAim == null || cam == null || cameraRig == null)
                 return;
@@ -194,7 +194,7 @@ namespace MFlight
                                       Quaternion.LookRotation(mouseAim.forward, upVec),
                                       camSmoothSpeed,
                                       Time.deltaTime);
-            */
+            
             /*
             // Second Version
             float mouseX = Input.GetAxis("Mouse X") * 2f;
