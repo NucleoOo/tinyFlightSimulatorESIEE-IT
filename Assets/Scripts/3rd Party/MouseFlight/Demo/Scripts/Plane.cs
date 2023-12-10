@@ -136,7 +136,7 @@ namespace MFlight.Demo
             rigid.AddRelativeForce(Vector3.forward * thrust * forceMult, ForceMode.Force);
             rigid.AddRelativeTorque(new Vector3(turnTorque.x * pitch,
                                                 turnTorque.y * yaw,
-                                                -turnTorque.z * roll) * forceMult,
+                                                -turnTorque.z * roll * 12.5f) * forceMult,
                                     ForceMode.Force);
         }
     }

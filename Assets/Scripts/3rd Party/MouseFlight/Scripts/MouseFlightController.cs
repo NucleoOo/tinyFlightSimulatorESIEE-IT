@@ -14,35 +14,49 @@ namespace MFlight
     public class MouseFlightController : MonoBehaviour
     {
         [Header("Components")]
-        [SerializeField] [Tooltip("Transform of the aircraft the rig follows and references")]
+        [SerializeField]
+        [Tooltip("Transform of the aircraft the rig follows and references")]
         private Transform aircraft = null;
-        [SerializeField] [Tooltip("Transform of the object the mouse rotates to generate MouseAim position")]
+        [SerializeField]
+        [Tooltip("Transform for the 1st person camera")]
+        private Transform firstCamPos = null;
+        [SerializeField]
+        [Tooltip("Transform of the object the mouse rotates to generate MouseAim position")]
         private Transform mouseAim = null;
-        [SerializeField] [Tooltip("Transform of the object on the rig which the camera is attached to")]
+        [SerializeField]
+        [Tooltip("Transform of the object on the rig which the camera is attached to")]
         private Transform cameraRig = null;
-        [SerializeField] [Tooltip("Transform of the camera itself")]
+        [SerializeField]
+        [Tooltip("Transform of the camera itself")]
         private Transform cam = null;
 
         [Header("Options")]
         public Vector3 offset;
-        [SerializeField] [Tooltip("Follow aircraft using fixed update loop")]
+        private Vector3 offsetTemp;
+        [SerializeField]
+        [Tooltip("Follow aircraft using fixed update loop")]
         private bool useFixed = true;
 
-        [SerializeField] [Tooltip("How quickly the camera tracks the mouse aim point.")]
+        [SerializeField]
+        [Tooltip("How quickly the camera tracks the mouse aim point.")]
         private float camSmoothSpeed = 5f;
 
-        [SerializeField] [Tooltip("Mouse sensitivity for the mouse flight target")]
+        [SerializeField]
+        [Tooltip("Mouse sensitivity for the mouse flight target")]
         private float mouseSensitivity = 3f;
 
-        [SerializeField] [Tooltip("How far the boresight and mouse flight are from the aircraft")]
+        [SerializeField]
+        [Tooltip("How far the boresight and mouse flight are from the aircraft")]
         private float aimDistance = 500f;
 
         [Space]
-        [SerializeField] [Tooltip("How far the boresight and mouse flight are from the aircraft")]
+        [SerializeField]
+        [Tooltip("How far the boresight and mouse flight are from the aircraft")]
         private bool showDebugInfo = false;
 
         private Vector3 frozenDirection = Vector3.forward;
         private bool isMouseAimFrozen = false;
+        private bool isFirstPersonView = false;
 
         /// <summary>
         /// Get a point along the aircraft's boresight projected out to aimDistance meters.
@@ -82,6 +96,7 @@ namespace MFlight
 
         private void Awake()
         {
+            offsetTemp = offset;
             if (aircraft == null)
                 Debug.LogError(name + "MouseFlightController - No aircraft transform assigned!");
             if (mouseAim == null)
@@ -96,7 +111,8 @@ namespace MFlight
             // rotations causing unintended rotations as it gets dragged around.
             transform.parent = null;
 
-            if (!Application.isEditor) {
+            if (!Application.isEditor)
+            {
                 Cursor.lockState = CursorLockMode.Confined;
                 Cursor.visible = false;
             }
@@ -104,7 +120,18 @@ namespace MFlight
 
         private void Update()
         {
-            if (Input.GetKeyDown(KeyCode.Escape)) {
+            if (Input.GetKeyDown(KeyCode.V) && !isFirstPersonView)
+            {
+                isFirstPersonView = true;
+                offsetTemp = Vector3.zero;
+            }
+            else if (Input.GetKeyDown(KeyCode.V) && isFirstPersonView)
+            {
+                isFirstPersonView = false;
+                offsetTemp = offset;
+            }
+            if (Input.GetKeyDown(KeyCode.Escape))
+            {
                 Cursor.lockState = CursorLockMode.None;
                 Cursor.visible = true;
             }
@@ -120,16 +147,19 @@ namespace MFlight
                 UpdateCameraPos();
         }
 
-        void LateUpdate() {
+        void LateUpdate()
+        {
             cam.position = cameraRig.position;
             cam.rotation = cameraRig.rotation;
-            cam.position += cam.forward * offset.z;
-            cam.position += cam.up * offset.y;
-            cam.position += cam.right * offset.x;
+            cam.position += cam.forward * offsetTemp.z;
+            cam.position += cam.up * offsetTemp.y;
+            cam.position += cam.right * offsetTemp.x;
         }
 
         private void RotateRig()
         {
+            
+            // First Version
             if (mouseAim == null || cam == null || cameraRig == null)
                 return;
 
@@ -139,7 +169,7 @@ namespace MFlight
                 isMouseAimFrozen = true;
                 frozenDirection = mouseAim.forward;
             }
-            else if  (Input.GetKeyUp(KeyCode.C))
+            else if (Input.GetKeyUp(KeyCode.C))
             {
                 isMouseAimFrozen = false;
                 mouseAim.forward = frozenDirection;
@@ -164,6 +194,18 @@ namespace MFlight
                                       Quaternion.LookRotation(mouseAim.forward, upVec),
                                       camSmoothSpeed,
                                       Time.deltaTime);
+            
+            /*
+            // Second Version
+            float mouseX = Input.GetAxis("Mouse X") * 2f;
+            float mouseY = Input.GetAxis("Mouse Y") * 2f;
+
+            // L'avion pique du nez si je descend la souris, qu'il lève le nez avec la souris vers le haut.
+            aircraft.Rotate(-mouseY, 0, 0);
+
+            // L'avion effectue un roulis à gauche si la souris se déplace à gauche et un roulis à droite si la souris se déplace vers la droite.
+            aircraft.Rotate(0, 0, -mouseX);
+            */
         }
 
         private Vector3 GetFrozenMouseAimPos()
@@ -176,9 +218,12 @@ namespace MFlight
 
         private void UpdateCameraPos()
         {
-            if (aircraft != null)
+            if (firstCamPos != null && isFirstPersonView)
             {
-                // Move the whole rig to follow the aircraft.
+                transform.position = firstCamPos.position;
+            }
+            else if (aircraft != null)
+            {
                 transform.position = aircraft.position;
             }
         }
