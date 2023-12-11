@@ -5,13 +5,16 @@ using UnityEngine.SceneManagement;
 
 public class PauseMenu : MonoBehaviour
 {
-    public GameObject pauseMenu;
-
+    public List<GameObject> pauseMenus;
     public bool isPaused;
+
     // Start is called before the first frame update
     void Start()
     {
-        pauseMenu.SetActive(false);
+        foreach (GameObject menu in pauseMenus)
+        {
+            menu.SetActive(false);
+        }
     }
 
     // Update is called once per frame
@@ -32,14 +35,17 @@ public class PauseMenu : MonoBehaviour
 
     public void PauseGame()
     {
-        pauseMenu.SetActive(true);
+        pauseMenus[0].SetActive(true);
         Time.timeScale = 0f;
         isPaused = true;
     }
 
     public void ResumeGame()
     {
-        pauseMenu.SetActive(false);
+        foreach (GameObject menu in pauseMenus)
+        {
+            menu.SetActive(false);
+        }
         Time.timeScale = 1f;
         isPaused = false;
     }

@@ -57,6 +57,8 @@ namespace MFlight
         private Vector3 frozenDirection = Vector3.forward;
         private bool isMouseAimFrozen = false;
         private bool isFirstPersonView = false;
+        public GameObject desiredPlane;
+        public bool isDesiredPlaneActive;
 
         /// <summary>
         /// Get a point along the aircraft's boresight projected out to aimDistance meters.
@@ -120,7 +122,8 @@ namespace MFlight
 
         private void Update()
         {
-            if (Input.GetKeyDown(KeyCode.V) && !isFirstPersonView)
+            isDesiredPlaneActive = desiredPlane.activeInHierarchy;
+            if (Input.GetKeyDown(KeyCode.V) && !isFirstPersonView && isDesiredPlaneActive)
             {
                 isFirstPersonView = true;
                 offsetTemp = Vector3.zero;
@@ -158,7 +161,7 @@ namespace MFlight
 
         private void RotateRig()
         {
-            
+
             // First Version
             if (mouseAim == null || cam == null || cameraRig == null)
                 return;
@@ -194,7 +197,7 @@ namespace MFlight
                                       Quaternion.LookRotation(mouseAim.forward, upVec),
                                       camSmoothSpeed,
                                       Time.deltaTime);
-            
+
             /*
             // Second Version
             float mouseX = Input.GetAxis("Mouse X") * 2f;
