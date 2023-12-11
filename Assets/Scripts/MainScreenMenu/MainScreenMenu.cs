@@ -13,5 +13,6 @@ public class Play : MonoBehaviour
     public void QuitGame()
     {
         Application.Quit();
+        /*faire un update*/
     }
 }
