@@ -123,6 +123,11 @@ namespace MFlight
         private void Update()
         {
             isDesiredPlaneActive = desiredPlane.activeInHierarchy;
+            if (!isDesiredPlaneActive && isFirstPersonView)
+            {
+                isFirstPersonView = false;
+                offsetTemp = offset;
+            }
             if (Input.GetKeyDown(KeyCode.V) && !isFirstPersonView && isDesiredPlaneActive)
             {
                 isFirstPersonView = true;
